@@ -1,10 +1,9 @@
 
-
 class Metric:
     def culc_edge_metric(self, combine_variables, client):
 
         edge_metric = []
-        for i in range(len(combine_variables)-1):
+        for i in range(len(combine_variables)):
 
             metric = client.query(f'select avgForEach(b) from (select groupArray(activity) as a, '
                                   f'arrayMap((x, y)-> date_diff(second, toDateTime(x), toDateTime(y))/(60*60*24), '
