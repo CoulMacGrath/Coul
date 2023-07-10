@@ -1,17 +1,11 @@
-import clickhouse_connect
-import logging
-from itertools import permutations
-import networkx as nx
-from networkx.algorithms import isomorphism
-
 
 
 class Metric:
     def culc_edge_metric(self, combine_variables, client):
-        #print(combine_variables)
+
         edge_metric = []
         for i in range(len(combine_variables)-1):
-            #возвращает разные значения
+
             metric = client.query(f'select avgForEach(b) from (select groupArray(activity) as a, '
                                   f'arrayMap((x, y)-> date_diff(second, toDateTime(x), toDateTime(y))/(60*60*24), '
                                   f'groupArray(start_time), arrayPushBack(arrayPopFront(groupArray(end_time) as ld), ld[-1])) as b '
