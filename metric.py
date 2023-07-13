@@ -1,6 +1,11 @@
 
 class Metric:
-    def culc_edge_metric(self, combine_variables, client):
+    def __init__(self, client=None,table=None):
+        self.client = None
+        self.table = 'main_table'
+
+
+    def culc_edge_metric(self, combine_variables, client, table):
 
         edge_metric = []
         for i in range(len(combine_variables)):
@@ -8,7 +13,7 @@ class Metric:
             metric = client.query(f'select avgForEach(b) from (select groupArray(activity) as a, '
                                   f'arrayMap((x, y)-> date_diff(second, toDateTime(x), toDateTime(y))/(60*60*24), '
                                   f'groupArray(start_time), arrayPushBack(arrayPopFront(groupArray(end_time) as ld), ld[-1])) as b '
-                                  f'from (select * from main_table order by start_time, end_time, activity) group by case_id) '
+                                  f'from (select * from {self.table} by start_time, end_time, activity) group by case_id) '
                                   f'having a = {combine_variables[i][1][2]}')
             metric_edge_dict = {}
             for j in range(len(combine_variables[i][1][2])-1):
