@@ -6,36 +6,42 @@ logging.basicConfig(level=20, filename="column_diagram_log.log",
 
 class Calc_diagrams():
 
+    def __init__(self, data=None, list_days=None, list_month=None):
+        self.data = None
+        self.list_days = None
+        self.list_month = None
+
+
     def calc_diagram_days(self, data):
 
         # Получение данных
-        data = data
+        self.data = data
 
-        list_days = []  # [к-во уникальных Id, №дня, №дня]
+        self.list_days = []  # [к-во уникальных Id, №дня, №дня]
         start_day = 0
-        for i in range(0, len(data.result_rows)-1):
-            list_days.append([data.result_rows[i][0], start_day, data.result_rows[i][1]])
-            start_day = data.result_rows[i][1]
+        for i in range(0, len(self.data.result_rows)-1):
+            self.list_days.append([self.data.result_rows[i][0], start_day, self.data.result_rows[i][1]])
+            start_day = self.data.result_rows[i][1]
 
-        logging.info(f"call calc_diagram_days: {list_days}")
+        logging.info(f"call calc_diagram_days: {self.list_days}")
         # для получения часов/минут перевести my_start, step_end
-        return list_days
+        return self.list_days
 
     def calc_diagram_months(self, data):
 
         # Получение данных
-        data = data
+        self.data = data
 
-        list_month = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11],
+        self.list_month = [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11],
                       [0, 12]]  # [к-во уникальных Id, №месяца]
 
         # Добавление данных [к-во уникальных Id, № месяца] в список
         # Считаем количество уникальных Id для конкретного месяца
-        for i in data.result_rows:
-            list_month[i[1].month - 1][0] = list_month[i[1].month - 1][0] + i[0]
+        for i in self.data.result_rows:
+            self.list_month[i[1].month - 1][0] = self.list_month[i[1].month - 1][0] + i[0]
 
-        logging.info(f"call calc_diagram_months: {list_month}")
-        return list_month
+        logging.info(f"call calc_diagram_months: {self.list_month}")
+        return self.list_month
 
 
 
