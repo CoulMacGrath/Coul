@@ -1,17 +1,14 @@
 #Обработка данных и подключение к БД
 from sberpm import DataHolder
-from sberpm.metrics import ActivityMetric, TransitionMetric, IdMetric, TraceMetric, UserMetric
 
 import pandas as pd
 import clickhouse_connect
 import query_builder
+import column_diagram
 
-#Graphviz
-from sberpm.visual import GraphvizPainter,ChartPainter
-import graphviz as gz
 
 #Различные варинаты майнеров
-from sberpm.miners import HeuMiner, SimpleMiner,CausalMiner,AlphaMiner,AlphaPlusMiner, InductiveMiner, CorrelationMiner
+from sberpm.miners import HeuMiner, SimpleMiner,CausalMiner
 
 
 class PythonMain:
@@ -20,7 +17,8 @@ class PythonMain:
                      data_purity=None,filter_column=None,filter_variables=None,
                      logfile=None, top_combine_variables=None, other_сleared_variables=None,
                      holder=None):
-            self.client = None
+            self.client = {'host': 'pheerses.space', 'port': 8123, 'username': 'practice',
+                           'password': 'secretKey_lhv323as5vc_d23k32mk'}
             self.table = None
             self.query1 = None
             self.query2 = None
@@ -34,14 +32,11 @@ class PythonMain:
             self.holder = None
 
         def get_main_holder(self,table,client,miner=None):
-            self.client = clickhouse_connect.get_client(host='pheerses.space', port=8123, username='practice',
-                                                   password='secretKey_lhv323as5vc_d23k32mk')
+            self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
+                                                        username=client['username'], password=client['password'])
             self.table = table
-
-            # Получение данных и преобразование в DataFrame
-            # Соединение часто недостаточно быстрое чтобы заниматсья дебагом
             lst_data = []
-            list_id = client.query('SELECT case_id, activity, start_time, end_time FROM {self.table}')
+            list_id = client.query('SELECT case_id, activity, start_time, end_time FROM ' + self.table)
             for i in list_id.result_rows:
                 lst_data.append(i)
                 lst_name = list_id.column_names
@@ -54,23 +49,25 @@ class PythonMain:
                                      end_timestamp_column='end_time',
                                      time_format='%Y-%m-%d %I:%M:%S')
             if self.miner != None:
-                self.miner = self.get_miner()
+                self.get_miner()
             else:
-                self.miner = self.get_miner(miner)
+                self.get_miner(miner)
 
+        def get_column_data(self,):
+            diagram = column_diagram.Calc_diagrams(self.client,query_builder.column_query())
 
 
 
         def apply(self,client):
-            self.client = clickhouse_connect.get_client(host=client.host, port=8123, username=client.username, password= client.password)
+            self.client = client
             if self.filter_column == None and self.filter_variables == None:
-                self.query = query_builder.first_query(self.filter_column,self.table)
+                self.query = query_builder.first_query(self.table,self.client)
             elif self.filter_column != None and self.filter_variables == None:
-                self.query = query_builder.column_query(self.filter_column,self.table)
+                self.query = query_builder.column_query(self.table,self.client,self.filter_column)
             elif self.filter_variables != None and self.filter_column == None :
-                self.query = query_builder.variables_query(self.filter_variables, self.table)
+                self.query = query_builder.variables_query(self.table,self.client,self.filter_variables)
             else:
-                self.query = query_builder.full_query(self.filter_column,self.filter_variables,self.table)
+                self.query = query_builder.full_query(self.table,self.client,self.filter_column,self.filter_variables)
 
         def get_miner(self,miner=None):
             if miner == 'CasualMiner':
