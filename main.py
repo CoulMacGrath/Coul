@@ -19,7 +19,7 @@ class PythonMain:
                      holder=None):
             self.client = {'host': 'pheerses.space', 'port': 8123, 'username': 'practice',
                            'password': 'secretKey_lhv323as5vc_d23k32mk'}
-            self.table = None
+            self.table = 'main_table'
             self.query1 = None
             self.query2 = None
             self.miner = None
@@ -31,12 +31,14 @@ class PythonMain:
             self.other_сleared_variables = None
             self.holder = None
 
-        def get_main_holder(self,table,client,miner=None):
-            self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
+        def get_main_holder(self,table = None,client = None,miner=None):
+            if client != None:
+                self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
                                                         username=client['username'], password=client['password'])
-            self.table = table
+            if table != None:
+                self.table = table
             lst_data = []
-            list_id = client.query('SELECT case_id, activity, start_time, end_time FROM ' + self.table)
+            list_id = self.client.query('SELECT case_id, activity, start_time, end_time FROM ' + self.table)
             for i in list_id.result_rows:
                 lst_data.append(i)
                 lst_name = list_id.column_names
@@ -80,6 +82,12 @@ class PythonMain:
 
 
 
+
+
+
+if __name__ == '__main__':
+    test = PythonMain.Connect()
+    test.get_main_holder()
 
 
 

@@ -5,22 +5,20 @@ import networkx as nx
 from networkx.algorithms import isomorphism
 
 class Connect:
-    def __init__(self, client=None, graphs=None, top_variables=None, other_variables=None,
+    def __init__(self, query=None, top_variables=None, other_variables=None,
                  logfile=None, top_combine_variables=None, other_сleared_variables=None):
-        self.client = None
-        self.graphs = None
+        self.query = None
         self.top_variables = None
         self.other_variables = None
         self.logfile = None
         self.top_combine_variables = None
         self.other_сleared_variables = None
 
-    def apply(self,client,graphs):
-        self.client = client
-        self.graphs = graphs
+    def apply(self,query):
+        self.query = query
         self.top_variables = []
         self.other_variables = []
-        result = self.graphs.result_rows
+        result = self.query.result_rows
 
         for item in result:
             if item[1] > 1:
@@ -44,10 +42,6 @@ class Connect:
                 except:
                     k = 0
             for res2 in self.other_variables:
-                #self.top_combine_variables.append(a)
-                #common_paths = [p for p in res[2] if p in res2[2] and p in res[2][res[2].index(p):]]
-                #similarity = (len(common_paths)/1.5) / len(res[2])
-                #if similarity >= 0.8:
                 g2 = nx.Graph()
                 for (inter, i) in enumerate(res2[2]):
                     try:
@@ -107,7 +101,7 @@ if __name__ == '__main__':
                           'groupArray([activity,toString(start_time)]))) as a  from main_table group by case_id)'
                           ' group by a order by count(case_id) desc')
     connect = Connect()
-    connect.apply(client, graphs)
+    connect.apply(graphs)
     #connect.combine_variables_isomorph()
     connect.combine_variables()
     #print(connect.top_variables)
