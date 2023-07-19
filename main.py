@@ -1,8 +1,11 @@
 #Обработка данных и подключение к БД
 from sberpm import DataHolder
+from sberpm.metrics import ActivityMetric
 
 import pandas as pd
 import clickhouse_connect
+
+import custom_painter
 import query_builder
 import column_diagram
 
@@ -16,9 +19,12 @@ class PythonMain:
         def __init__(self, client=None, table=None, query1=None, query2=None, miner=None,
                      data_purity=None,filter_column=None,filter_variables=None,
                      logfile=None, top_combine_variables=None, other_сleared_variables=None,
-                     holder=None,diagram=None):
-            self.client = None
-            self.table = None
+                     holder=None,diagram=None, image=None, count_metric=None, graph=None):
+            self.client = {'host': 'pheerses.space',
+                           'port': 8123,
+                           'username': 'practice',
+                           'password': 'secretKey_lhv323as5vc_d23k32mk'}
+            self.table = 'main_table'
             self.query1 = None
             self.query2 = None
             self.miner = None
@@ -30,10 +36,10 @@ class PythonMain:
             self.other_сleared_variables = None
             self.holder = None
             self.diagram = None
-        def get_main_holder(self,table = 'main_table', miner=None, client={'host': 'pheerses.space',
-                                                                           'port': 8123,
-                                                                           'username': 'practice',
-                                                                           'password': 'secretKey_lhv323as5vc_d23k32mk'}):
+            self.image = None
+            self.count_metric = None
+            self.graph = None
+        def get_main_holder(self,table=None, miner=None, client=None):
             if client != None:
                 self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
                                                         username=client['username'], password=client['password'])
@@ -52,20 +58,33 @@ class PythonMain:
                                      start_timestamp_column='start_time',
                                      end_timestamp_column='end_time',
                                      time_format='%Y-%m-%d %I:%M:%S')
+
+            self.holder.check_or_calc_duration()
+            self.holder.data.head()
+            self.holder.get_grouped_data(self.holder.activity_column, self.holder.start_timestamp_column).head()
+
+            activity_metric = ActivityMetric(self.holder, time_unit='d')
+            activity_metric.calculate_time_metrics()
+            activity_metric.apply().head()
+            self.count_metric = activity_metric.count().to_dict()
+
             if self.miner != None:
                 self.get_miner()
             else:
                 self.get_miner(miner)
+
+
         def get_filtred_holder(self, filter_column, filter_variables, client=None, table=None):
-            if
+            return
 
 
-        def first_start(self,table = 'main_table', miner=None, client={'host': 'pheerses.space',
-                                                                       'port': 8123,
-                                                                       'username': 'practice',
-                                                                       'password': 'secretKey_lhv323as5vc_d23k32mk'}):
-            self.holder = self.get_main_holder(table=,miner=)
-
+        def first_start(self,table = 'main_table', miner=None, client=None):
+            self.get_main_holder(table=self.table,miner=self.miner,client=self.client)
+            self.miner.apply()
+            self.graph = self.miner.graph
+            self.graph.add_node_metric('count', self.count_metric)
+            self.image = custom_painter.CustomPainter().create(nodes=self.graph.nodes, edges=self.graph.edges,
+                                                               file_name='main_all', format='svg')
 
         def get_column_data(self,client=None,table=None):
             if client != None:
@@ -109,7 +128,7 @@ class PythonMain:
 
 if __name__ == '__main__':
     test = PythonMain.Connect()
-    test.get_main_holder()
+    test.first_start()
 
 
 

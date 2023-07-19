@@ -14,7 +14,7 @@ class Builder:
         self.table_agg = None
         self.variables = None
 
-    def column(self, table='main_table', client=None, span='days'):
+    def column(self, table=None, client=None, span='days'):
         if client != None:
             self.client = client
         if table != None:
@@ -31,6 +31,7 @@ class Builder:
                                            'date_diff(second, min(start_time), max(end_time))/(60*60*24) as diff '
                                            'from ' + self.table + ' group by case_id order by diff)'
                                            ' group by a order by a')
+        #Недоделанная часть расчитаная на календарные периоды
         else:
             self.query = self.client.query('select count(case_id), dt from (select case_id, min(date(start_time)) as dt '
                                        'from ' + self.table + ' group by case_id ORDER BY dt) group by dt')
@@ -80,11 +81,11 @@ class Builder:
         if filter_column != None:
             self.query = self.client.query('select * from ' + self.table + 'where case_id in (select case_id from'
                                            ' main_table_agg where variant in ' + self.variables +
-                                           ') and duration/(60*60*24) beetween '
+                                           ') and duration/(60*60*24) beetween'
                                            + self.filter_column[0] + ' ' + self.filter_column[1])
         else:
-        self.query = self.client.query('select * from ' + self.table + 'where case_id in (select case_id from'
-                                       ' main_table_agg where variant in '+ self.variables +')')
+            self.query = self.client.query('select * from ' + self.table + 'where case_id in (select case_id from'
+                                           'main_table_agg where variant in ' + self.variables + ')')
 
 
 
