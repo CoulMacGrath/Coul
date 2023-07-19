@@ -16,22 +16,24 @@ class PythonMain:
         def __init__(self, client=None, table=None, query1=None, query2=None, miner=None,
                      data_purity=None,filter_column=None,filter_variables=None,
                      logfile=None, top_combine_variables=None, other_сleared_variables=None,
-                     holder=None):
-            self.client = {'host': 'pheerses.space', 'port': 8123, 'username': 'practice',
-                           'password': 'secretKey_lhv323as5vc_d23k32mk'}
-            self.table = 'main_table'
+                     holder=None,diagram=None):
+            self.client = None
+            self.table = None
             self.query1 = None
             self.query2 = None
             self.miner = None
-            self.data_purity = 0.8
+            self.data_purity = None
             self.filter_column = None
             self.filter_variables = None
             self.logfile = None
             self.top_combine_variables = None
             self.other_сleared_variables = None
             self.holder = None
-
-        def get_main_holder(self,table = None,client = None,miner=None):
+            self.diagram = None
+        def get_main_holder(self,table = 'main_table', miner=None, client={'host': 'pheerses.space',
+                                                                           'port': 8123,
+                                                                           'username': 'practice',
+                                                                           'password': 'secretKey_lhv323as5vc_d23k32mk'}):
             if client != None:
                 self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
                                                         username=client['username'], password=client['password'])
@@ -54,24 +56,44 @@ class PythonMain:
                 self.get_miner()
             else:
                 self.get_miner(miner)
-
-        def get_column_data(self,):
-            diagram = column_diagram.Calc_diagrams(self.client,query_builder.column_query())
-
+        def get_filtred_holder(self, filter_column, filter_variables, client=None, table=None):
+            if
 
 
-        def apply(self,client):
-            self.client = client
+        def first_start(self,table = 'main_table', miner=None, client={'host': 'pheerses.space',
+                                                                       'port': 8123,
+                                                                       'username': 'practice',
+                                                                       'password': 'secretKey_lhv323as5vc_d23k32mk'}):
+            self.holder = self.get_main_holder(table=,miner=)
+
+
+        def get_column_data(self,client=None,table=None):
+            if client != None:
+                self.client = client
+            if table != None:
+                self.table = table
+            self.query = query_builder.Builder.column(client=self.client,table=self.table,span='days')
+            self.diagram = column_diagram.Calc_diagrams.calc_diagram_days(self.query)
+
+
+
+
+        def apply(self,client=None,table=None):
+            if client != None:
+                self.client = client
+            if table != None:
+                self.table = table
             if self.filter_column == None and self.filter_variables == None:
-                self.query = query_builder.first_query(self.table,self.client)
+                self.query = query_builder.first_query(self.table, self.client)
             elif self.filter_column != None and self.filter_variables == None:
-                self.query = query_builder.column_query(self.table,self.client,self.filter_column)
+                self.query = query_builder.column_query(self.filter_column, self.table, self.client,)
             elif self.filter_variables != None and self.filter_column == None :
-                self.query = query_builder.variables_query(self.table,self.client,self.filter_variables)
+                self.query = query_builder.variables_query(self.filter_variables, self.table, self.client)
             else:
-                self.query = query_builder.full_query(self.table,self.client,self.filter_column,self.filter_variables)
+                self.query = query_builder.full_query(self.filter_column, self.filter_variables, self.table, self.client)
 
-        def get_miner(self,miner=None):
+        def get_miner(self,miner=None,data_purity=0.8):
+            self.data_purity = data_purity
             if miner == 'CasualMiner':
                 self.miner = CausalMiner(self.holder)
             elif miner == 'SimpleMiner':
