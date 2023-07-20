@@ -85,8 +85,26 @@ class PythonMain:
                 self.get_miner(miner)
 
 
-        def get_filtred_holder(self, filter_column, filter_variables, client=None, table=None):
-            return
+        def get_filtred_holder(self, filter_column, filter_variables, miner=None,
+                               data_purity=None, table=None,client=None):
+            if client != None:
+                self.connect = clickhouse_connect.get_client(host=client['host'], port=client['port'],
+                                                        username=client['username'], password=client['password'])
+            if table != None:
+                self.table = table
+            if data_purity != None:
+                self.data_purity = data_purity
+            if miner != None:
+                self.get_miner(miner, self.data_purity)
+            if filter_column != None:
+                self.filter_column = filter_column
+            if filter_variables != None:
+                self.filter_variables = filter_variables
+
+            self.query1 = query_builder.Builder().column_query(self.filter_column,self.table,self.client)
+
+
+
 
 
         def first_start(self,table = None, miner=None, client=None, data_purity=None):
@@ -160,7 +178,8 @@ class PythonMain:
             elif self.filter_variables != None and self.filter_column == None :
                 self.query = query_builder.variables_query(self.filter_variables, self.table, self.client)
             else:
-                self.query = query_builder.full_query(self.filter_column, self.filter_variables, self.table, self.client)
+                self.query = query_builder.full_query(self.filter_column, self.filter_variables,
+                                                      self.table, self.client)
 
         def get_miner(self,miner=None,data_purity=0.8):
             self.data_purity = data_purity
