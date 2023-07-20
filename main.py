@@ -162,7 +162,9 @@ class PythonMain:
 
             self.image_graph = custom_painter.CustomPainter()
             self.image_graph.create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                    file_name='filter', format='svg',time_metric=self.time_metric)
+                                    file_name='filterC('+str(filter_column[0])+'-'+ str(filter_column[1])+')'+
+                                              'filterV(' + str(filter_variables) + ')'
+                                    , format='svg',time_metric=self.time_metric)
             self.image_graph = self.image_graph.base64image
 
 
@@ -263,6 +265,12 @@ if __name__ == '__main__':
     test = PythonMain.Connect()
     test.first_start()
     test.get_filtred_holder([0,17], ['0'], HeuMiner, 0.8, 'main_table')
+    test.get_filtred_holder([0, 17], ['1'], HeuMiner, 0.8, 'main_table')
+    test.get_filtred_holder([0, 17], ['2'], HeuMiner, 0.8, 'main_table')
+    test.get_filtred_holder([0, 17], ['3'], HeuMiner, 0.8, 'main_table')
+    test.get_filtred_holder([0, 17], ['4'], HeuMiner, 0.8, 'main_table')
+    test.get_filtred_holder([0, 52], ['0','1','2'], HeuMiner, 0.8, 'main_table')
+
 
 
 
