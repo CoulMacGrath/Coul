@@ -75,7 +75,9 @@ class Builder:
         if filter_column != None:
             self.filter_column = filter_column
             self.query = self.client.query('select count(case_id), count(case_id)*100/(select count(case_id)'
-                                           'from ' + self.table_agg +'), variant from ' + self.table_agg +
+                                           'from ' + self.table_agg + ' where duration/(60*60*24) between '
+                                           + str(self.filter_column[0]) + ' and '
+                                           + str(self.filter_column[1]) + '), variant from ' + self.table_agg +
                                            ' where duration/(60*60*24) between ' + str(self.filter_column[0]) + ' and '
                                            + str(self.filter_column[1]) +
                                            ' group by variant order by count(case_id) desc')

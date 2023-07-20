@@ -262,7 +262,7 @@ class PythonMain:
 if __name__ == '__main__':
     test = PythonMain.Connect()
     test.first_start()
-    test.get_filtred_holder([0,52], ['2'], HeuMiner, 0.8, 'main_table')
+    test.get_filtred_holder([0,17], ['0'], HeuMiner, 0.8, 'main_table')
 
 
 
