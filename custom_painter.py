@@ -9,7 +9,7 @@ logging.basicConfig(level=20, filename="custom_painter_log.log",
 class CustomPainter():
 
     def __init__(self, nodes=None, edges=None, file_name=None, format=None, new_color=None,
-                 node_style_metric=None, edges_style_metric=None, node_metric=None):
+                 node_style_metric=None, edges_style_metric=None, node_metric=None,base64image=None):
         self.nodes = None
         self.edges = None
         self.file_name = None
@@ -23,6 +23,7 @@ class CustomPainter():
                                   }
         self.edge_style_metric = {'color': self.new_color, 'fontcolor': self.new_color, 'fontsize': '9.0'}
         self.node_metric = None
+        self.base64image = None
 
 
     def recolor_picture(self, img):

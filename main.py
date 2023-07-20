@@ -129,11 +129,13 @@ class PythonMain:
 
             self.image_column = column_diagram.DiagramPainter()
             self.image_column.create_diagram_days(self.column_query, '#e06666',self.table)
+            self.image_column = self.image_column.base64image
 
         #Сохраняет свг граф и возвращает картинку в формате base64
-            self.image_graph = custom_painter.CustomPainter().create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                                                     file_name='main_all', format='svg',
-                                                                     metric=self.time_metric)
+            self.image_graph = custom_painter.CustomPainter()
+            self.image_graph.create(nodes=self.graph.nodes, edges=self.graph.edges,
+                                    file_name='main_all', format='svg')
+            self.image_graph = self.image_graph.base64image
 
         def get_column_data(self,client=None,table=None):
             if client != None:

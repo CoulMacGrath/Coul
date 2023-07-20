@@ -1,17 +1,18 @@
 import clickhouse_connect
 import logging
 import matplotlib.pyplot as plt
+import base64
 
 logging.basicConfig(level=20, filename="column_diagram_log.log",
                             format="%(asctime)s %(levelname)s %(message)s")
 
 class Calc_diagrams():
 
-    def __init__(self, data=None, list_days=None, list_month=None, column_image=None, table=None):
+    def __init__(self, data=None, list_days=None, list_month=None, table=None):
         self.data = None
         self.list_days = None
         self.list_month = None
-        self.column_image = None
+
 
 
     def calc_diagram_days(self, data):
@@ -57,7 +58,11 @@ class DiagramPainter():
         plt.grid(axis='y', linewidth=0.2)
         plt.locator_params(axis='y', nbins=14)
         plt.savefig(str(table) + '_column')
-        return plt
+        with open(str(table) + '_column.png', "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+            image_file.close()
+            self.base64image = encoded_string
+
 
 
     def create_diagram_days(self, data, color,table):
