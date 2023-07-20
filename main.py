@@ -24,7 +24,7 @@ class PythonMain:
                      logfile=None, top_combine_variables=None, other_сleared_variables=None,
                      column_variabls=None,holder=None,diagram=None, image_graph=None,
                      count_metric=None, graph=None, connect=None,image_column=None,
-                     time_metric=None,all_variables=None):
+                     time_metric=None,all_variables=None,column_query=None):
             self.client = {'host': 'pheerses.space',
                            'port': 8123,
                            'username': 'practice',
@@ -49,6 +49,7 @@ class PythonMain:
             self.count_metric = None
             self.graph = None
             self.time_metric = None
+            self.column_query = None
         def get_main_holder(self,table=None, miner=None, client=None):
             if client != None:
                 self.connect = clickhouse_connect.get_client(host=client['host'], port=client['port'],
@@ -93,11 +94,12 @@ class PythonMain:
                 self.client = client
             if table != None:
                 self.table = table
+        #Обрабатывает данные и создает граф
             self.get_main_holder(table=self.table,miner=self.miner,client=self.client)
             self.miner.apply()
             self.graph = self.miner.graph
             self.graph.add_node_metric('count', self.count_metric)
-
+        #Сбор вариантов для дальнейшей обработки
             self.query1 = query_builder.Builder()
             self.query1.get_variables(table=self.table, client=self.client)
             self.query1 = self.query1.query
@@ -105,19 +107,24 @@ class PythonMain:
             self.column_variables = processing_variants.Connect()
             self.column_variables.apply(self.query1)
             self.column_variables.combine_variables()
-
+        #Собирает метрики по всем вариантам
             self.all_variables = self.column_variables.all_variables
             self.time_metric = metric.Metric().culc_edge_metric(self.all_variables,self.client)
             self.column_variables = self.column_variables.column_variables
 
+        #Сохраняет в папку диаграмму в формате "названиетаблицы_column"
             self.query2 = query_builder.Builder()
             self.query2.get_column(table=self.table, client=self.client)
             self.query2 = self.query2.query
-            column_query = column_diagram.Calc_diagrams()
-            column_query = column_query.calc_diagram_days(self.query2)
+
+            self.column_query = column_diagram.Calc_diagrams()
+        #column_query содержит данные для фильтрации по колонкам
+            self.column_query = self.column_query.calc_diagram_days(self.query2)
 
             self.image_column = column_diagram.DiagramPainter()
-            self.image_column.create_diagram_days(column_query, '#e06666',self.table)
+            self.image_column.create_diagram_days(self.column_query, '#e06666',self.table)
+
+        #Сохраняет свг граф и возвращает картинку в формате base64
             self.image_graph = custom_painter.CustomPainter().create(nodes=self.graph.nodes, edges=self.graph.edges,
                                                                      file_name='main_all', format='svg')
 
