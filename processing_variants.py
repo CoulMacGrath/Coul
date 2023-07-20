@@ -6,13 +6,15 @@ from networkx.algorithms import isomorphism
 
 class Connect:
     def __init__(self, query=None, top_variables=None, other_variables=None,
-                 logfile=None, top_combine_variables=None, other_сleared_variables=None):
+                 logfile=None, top_combine_variables=None, other_сleared_variables=None,
+                 column_variables=None):
         self.query = None
         self.top_variables = None
         self.other_variables = None
         self.logfile = None
         self.top_combine_variables = None
         self.other_сleared_variables = None
+        self.column_variables = None
 
     def apply(self,query):
         self.query = query
@@ -61,12 +63,16 @@ class Connect:
     def combine_variables(self):
         result_top = self.top_variables
         self.top_combine_variables = []
+        self.column_variables = []
         self.other_сleared_variables = self.other_variables
         for (i,elem) in enumerate(result_top):
+            c = 0
+            d = 0
             a = (str(i), elem)
+            c = a[1][0]
+            d = a[1][1]
             self.top_combine_variables.append(a)
             list1 = elem[2]
-            print(a)
             for (e,elem2) in enumerate(self.other_variables):
                 list2 = elem2[2]
                 if set(list1) != set(list2):
@@ -82,11 +88,27 @@ class Connect:
 
                     if seq_list1 == seq_list2:
                         b = (str(i), elem2)
+                        c += elem2[0]
+                        d += elem2[1]
                         self.top_combine_variables.append(b)
                         self.other_сleared_variables.remove(elem2)
-                        print(b)
                 continue
+            top_cort = (str(i),c,d)
+            self.column_variables.append(top_cort)
+        oc = 0
+        od = 0
+        for element in self.other_сleared_variables:
+            oc += element[0]
+            od += element[1]
+        other_cort = ('other',oc,od)
+        self.column_variables.append(other_cort)
+
         return (self.top_combine_variables)
+
+
+
+
+
 
 
 
@@ -105,5 +127,4 @@ if __name__ == '__main__':
     #connect.combine_variables_isomorph()
     connect.combine_variables()
     #print(connect.top_variables)
-    print()
-    print(connect.other_variables)
+    print(connect.column_variables)
