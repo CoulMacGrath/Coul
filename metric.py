@@ -37,8 +37,10 @@ class Metric:
 
         return self.edge_metric
 
-    def join_metrics(self, data, start, end):
-
+    def join_metrics(self, data, start=None, end=None):
+        if start == None and end == None:
+            start = 0
+            end = len(data)
         self.data = data
         self.new_metric_edge_dict = {}
         new_sum_e_dict = {}

@@ -110,6 +110,7 @@ class PythonMain:
         #Собирает метрики по всем вариантам
             self.all_variables = self.column_variables.all_variables
             self.time_metric = metric.Metric().culc_edge_metric(self.all_variables,self.client)
+            self.time_metric = metric.Metric().join_metrics(self.time_metric)
             self.column_variables = self.column_variables.column_variables
 
         #Сохраняет в папку диаграмму в формате "названиетаблицы_column"
@@ -126,7 +127,8 @@ class PythonMain:
 
         #Сохраняет свг граф и возвращает картинку в формате base64
             self.image_graph = custom_painter.CustomPainter().create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                                                     file_name='main_all', format='svg')
+                                                                     file_name='main_all', format='svg',
+                                                                     metric=self.time_metric)
 
         def get_column_data(self,client=None,table=None):
             if client != None:
