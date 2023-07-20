@@ -36,7 +36,7 @@ class Connect:
         self.other_сleared_variables = self.other_variables
         for (index,res) in enumerate(result_top):
             a = (str(index), res)
-            print(a)
+            #print(a)
             g1 = nx.Graph()
             for (intex, i) in enumerate(res[2]):
                 try:
@@ -55,7 +55,7 @@ class Connect:
                 GM = isomorphism.GraphMatcher(g1, g2)
                 if GM.is_isomorphic():
                     b = (str(index), res2)
-                    print(b)
+                    #print(b)
                     self.top_combine_variables.append(b)
                     self.other_сleared_variables.remove(res2)
         logging.info('combine variables')
@@ -75,6 +75,7 @@ class Connect:
             d = a[1][1]
             self.all_variables.append(a)
             self.top_combine_variables.append(a)
+            #print(a)
             list1 = elem[2]
             for (e,elem2) in enumerate(self.other_variables):
                 list2 = elem2[2]
@@ -93,6 +94,7 @@ class Connect:
                         b = (str(i), elem2)
                         c += elem2[0]
                         d += elem2[1]
+                        #print(b)
                         self.all_variables.append(b)
                         self.top_combine_variables.append(b)
                         self.other_сleared_variables.remove(elem2)
@@ -105,6 +107,7 @@ class Connect:
             oc += element[0]
             od += element[1]
         other_cort = ('other',oc,od)
+        #print(other_cort)
         self.column_variables.append(other_cort)
 
         for elem3 in self.other_сleared_variables:

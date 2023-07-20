@@ -21,7 +21,7 @@ class PythonMain:
     class Connect:
         def __init__(self, client=None, table=None, query1=None, query2=None, miner=None,
                      data_purity=None,filter_column=None,filter_variables=None,
-                     logfile=None, top_combine_variables=None, other_сleared_variables=None,
+                     logfile=None, filtred_variables=None,
                      column_variabls=None,holder=None,diagram=None, image_graph=None,
                      count_metric=None, graph=None, connect=None,image_column=None,
                      time_metric=None,all_variables=None,column_query=None):
@@ -38,8 +38,7 @@ class PythonMain:
             self.filter_column = None
             self.filter_variables = None
             self.logfile = None
-            self.top_combine_variables = None
-            self.other_сleared_variables = None
+            self.filtred_variables = None
             self.all_variables = None
             self.column_variables = None
             self.holder = None
@@ -101,7 +100,71 @@ class PythonMain:
             if filter_variables != None:
                 self.filter_variables = filter_variables
 
-            self.query1 = query_builder.Builder().column_query(self.filter_column,self.table,self.client)
+
+        # Сбор вариантов для дальнейшей обработки
+            self.query1 = query_builder.Builder()
+            self.query1.get_variables(table=self.table, client=self.client, filter_column=self.filter_column)
+            self.query1 = self.query1.query
+
+            self.column_variables = processing_variants.Connect()
+            self.column_variables.apply(self.query1)
+            self.column_variables.combine_variables()
+
+        #Собирает метрики по всем вариантам
+            self.all_variables = self.column_variables.all_variables
+            self.time_metric = metric.Metric().culc_edge_metric(self.all_variables, self.client)
+            self.time_metric = metric.Metric().join_metrics(self.time_metric)
+            self.column_variables = self.column_variables.column_variables
+
+        #Сбор вариантов соответствующих фильтру
+            self.filtred_variables = '['
+            for i in self.all_variables:
+                if i[0] in self.filter_variables:
+                    self.filtred_variables += str((i[1][2])) + ','
+            self.filtred_variables = self.filtred_variables[:-1]
+            self.filtred_variables += ']'
+
+            self.query2 = query_builder.Builder()
+            self.query2.variables_query(filter_column=self.filter_column,variables=self.filtred_variables,
+                                        table=self.table,client=self.client)
+            self.query2 = self.query2.query
+            lst_data = []
+            for i in self.query2.result_rows:
+                lst_data.append(i)
+                lst_name = self.query2.column_names
+
+            df = pd.DataFrame(lst_data, columns=lst_name)
+
+            self.holder = DataHolder(data=df,
+                                     id_column='case_id',
+                                     activity_column='activity',
+                                     start_timestamp_column='start_time',
+                                     end_timestamp_column='end_time',
+                                     time_format='%Y-%m-%d %I:%M:%S')
+
+            self.holder.check_or_calc_duration()
+            self.holder.data.head()
+            self.holder.get_grouped_data(self.holder.activity_column, self.holder.start_timestamp_column).head()
+
+            activity_metric = ActivityMetric(self.holder, time_unit='d')
+            activity_metric.calculate_time_metrics()
+            activity_metric.apply().head()
+            self.count_metric = activity_metric.count().to_dict()
+
+            if self.miner != None:
+                self.get_miner()
+            else:
+                self.get_miner(miner,self.data_purity)
+
+            self.miner.apply()
+            self.graph = self.miner.graph
+            self.graph.add_node_metric('count', self.count_metric)
+
+            self.image_graph = custom_painter.CustomPainter()
+            self.image_graph.create(nodes=self.graph.nodes, edges=self.graph.edges,
+                                    file_name='filter', format='svg')
+            self.image_graph = self.image_graph.base64image
+
 
 
 
@@ -199,6 +262,7 @@ class PythonMain:
 if __name__ == '__main__':
     test = PythonMain.Connect()
     test.first_start()
+    test.get_filtred_holder([0,52], ['2'], HeuMiner, 0.8, 'main_table')
 
 
 

@@ -76,29 +76,31 @@ class Builder:
             self.filter_column = filter_column
             self.query = self.client.query('select count(case_id), count(case_id)*100/(select count(case_id)'
                                            'from ' + self.table_agg +'), variant from ' + self.table_agg +
-                                           ' where duration/(60*60*24) between ' + self.filter_column[0] + ' and '
-                                           + self.filter_column[1] +
-                                           'group by variant order by count(case_id) desc')
+                                           ' where duration/(60*60*24) between ' + str(self.filter_column[0]) + ' and '
+                                           + str(self.filter_column[1]) +
+                                           ' group by variant order by count(case_id) desc')
 
         else:
             self.query = self.client.query('select count(case_id), count(case_id)*100/(select count(case_id)'
                                            'from ' + self.table_agg +'), variant from ' + self.table_agg +' group'
                                            ' by variant order by count(case_id) desc')
 
-    def variables_query(self, filter_column=None,  table=None, client=None):
+    def variables_query(self,variables, filter_column=None,  table=None, client=None):
         if client != None:
             self.client = client
         if table != None:
             self.table = table
+        self.variables = variables
         self.table = table
+        self.table_agg = self.table + '_agg'
         self.filter_column = filter_column
         self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
                                                     username=client['username'], password=client['password'])
         if filter_column != None:
-            self.query = self.client.query('select * from ' + self.table + 'where case_id in (select case_id from'
-                                           ' main_table_agg where variant in ' + self.variables +
-                                           ') and duration/(60*60*24) beetween'
-                                           + self.filter_column[0] + ' ' + self.filter_column[1])
+            self.query = self.client.query('select * from ' + self.table + ' where case_id in (select case_id from'
+                                           ' '+self.table_agg +' where variant in ' + self.variables +
+                                           ' and duration/(60*60*24) between '
+                                           + str(self.filter_column[0]) + ' and ' + str(self.filter_column[1])+')')
         else:
             self.query = self.client.query('select * from ' + self.table + 'where case_id in (select case_id from'
                                            'main_table_agg where variant in ' + self.variables + ')')

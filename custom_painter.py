@@ -19,7 +19,6 @@ class CustomPainter():
         self.node_style_metric = {'shape': 'plaintext', 'color': self.new_color, 'fontcolor': self.new_color,
                                   'fontsize': '12.0', 'size': '2', 'image' : '1.png', 'imagepos' : 'ml',
                                   'margin' : '0.55,0.0'
-
                                   }
         self.edge_style_metric = {'color': self.new_color, 'fontcolor': self.new_color, 'fontsize': '9.0'}
         self.node_metric = None
