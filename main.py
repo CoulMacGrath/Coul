@@ -89,11 +89,16 @@ class PythonMain:
             return
 
 
-        def first_start(self,table = None, miner=None, client=None):
+        def first_start(self,table = None, miner=None, client=None, data_purity=None):
             if client != None:
                 self.client = client
             if table != None:
                 self.table = table
+            if data_purity != None:
+                self.data_purity = data_purity
+            if miner != None:
+                self.get_miner(miner, self.data_purity)
+
         #Обрабатывает данные и создает граф
             self.get_main_holder(table=self.table,miner=self.miner,client=self.client)
             self.miner.apply()
