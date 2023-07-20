@@ -1,5 +1,4 @@
 import clickhouse_connect
-
 class Metric:
 
     def __init__(self, combine_variables=None, client=None, data=None, edge_metric=None, new_metric_edge_dict=None ):
@@ -10,8 +9,8 @@ class Metric:
         self.new_metric_edge_dict = None
 
     def culc_edge_metric(self, combine_variables, client):
+
         self.edge_metric = []
-        self.client = client
         self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
                                                     username=client['username'], password=client['password'])
         self.combine_variables = combine_variables
@@ -37,10 +36,8 @@ class Metric:
 
         return self.edge_metric
 
-    def join_metrics(self, data, start=None, end=None):
-        if start == None and end == None:
-            start = 0
-            end = len(data)
+    def join_metrics(self, data, start, end):
+
         self.data = data
         self.new_metric_edge_dict = {}
         new_sum_e_dict = {}
@@ -61,4 +58,4 @@ class Metric:
             for i in self.new_metric_edge_dict:
                 self.new_metric_edge_dict[i] = new_sum_e_dict[i]/new_total_count_dict[i]
 
-        return self.new_metric_edge_dict.items()
+        return self.new_metric_edge_dict

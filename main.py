@@ -113,7 +113,7 @@ class PythonMain:
         #Собирает метрики по всем вариантам
             self.all_variables = self.column_variables.all_variables
             self.time_metric = metric.Metric().culc_edge_metric(self.all_variables, self.client)
-            self.time_metric = metric.Metric().join_metrics(self.time_metric)
+            self.time_metric = self.time_metric = metric.Metric().join_metrics(self.time_metric, 0, len(self.time_metric))
             self.column_variables = self.column_variables.column_variables
 
         #Сбор вариантов соответствующих фильтру
@@ -162,7 +162,7 @@ class PythonMain:
 
             self.image_graph = custom_painter.CustomPainter()
             self.image_graph.create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                    file_name='filter', format='svg')
+                                    file_name='filter', format='svg',time_metric=self.time_metric)
             self.image_graph = self.image_graph.base64image
 
 
@@ -196,7 +196,7 @@ class PythonMain:
         #Собирает метрики по всем вариантам
             self.all_variables = self.column_variables.all_variables
             self.time_metric = metric.Metric().culc_edge_metric(self.all_variables,self.client)
-            self.time_metric = metric.Metric().join_metrics(self.time_metric)
+            self.time_metric = metric.Metric().join_metrics(self.time_metric, 0, len(self.time_metric))
             self.column_variables = self.column_variables.column_variables
 
         #Сохраняет в папку диаграмму в формате "названиетаблицы_column"
@@ -215,7 +215,7 @@ class PythonMain:
         #Сохраняет свг граф и возвращает картинку в формате base64
             self.image_graph = custom_painter.CustomPainter()
             self.image_graph.create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                    file_name='main_all', format='svg')
+                                    file_name='main_all', format='svg',time_metric=self.time_metric)
             self.image_graph = self.image_graph.base64image
 
         def get_column_data(self,client=None,table=None):
