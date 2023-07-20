@@ -15,6 +15,7 @@ class Connect:
         self.top_combine_variables = None
         self.other_сleared_variables = None
         self.column_variables = None
+        self.all_variables = None
 
     def apply(self,query):
         self.query = query
@@ -65,12 +66,14 @@ class Connect:
         self.top_combine_variables = []
         self.column_variables = []
         self.other_сleared_variables = self.other_variables
+        self.all_variables = []
         for (i,elem) in enumerate(result_top):
             c = 0
             d = 0
             a = (str(i), elem)
             c = a[1][0]
             d = a[1][1]
+            self.all_variables.append(a)
             self.top_combine_variables.append(a)
             list1 = elem[2]
             for (e,elem2) in enumerate(self.other_variables):
@@ -90,6 +93,7 @@ class Connect:
                         b = (str(i), elem2)
                         c += elem2[0]
                         d += elem2[1]
+                        self.all_variables.append(b)
                         self.top_combine_variables.append(b)
                         self.other_сleared_variables.remove(elem2)
                 continue
@@ -103,7 +107,11 @@ class Connect:
         other_cort = ('other',oc,od)
         self.column_variables.append(other_cort)
 
+        for elem3 in self.other_сleared_variables:
+            oav = ('other',elem3)
+            self.all_variables.append(oav)
         return (self.top_combine_variables)
+
 
 
 

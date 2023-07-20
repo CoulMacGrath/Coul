@@ -9,6 +9,8 @@ import custom_painter
 import query_builder
 import column_diagram
 import processing_variants
+import metric
+
 
 
 #Различные варинаты майнеров
@@ -21,7 +23,8 @@ class PythonMain:
                      data_purity=None,filter_column=None,filter_variables=None,
                      logfile=None, top_combine_variables=None, other_сleared_variables=None,
                      column_variabls=None,holder=None,diagram=None, image_graph=None,
-                     count_metric=None, graph=None, connect=None):
+                     count_metric=None, graph=None, connect=None,image_column=None,
+                     time_metric=None,all_variables=None):
             self.client = {'host': 'pheerses.space',
                            'port': 8123,
                            'username': 'practice',
@@ -37,12 +40,15 @@ class PythonMain:
             self.logfile = None
             self.top_combine_variables = None
             self.other_сleared_variables = None
+            self.all_variables = None
             self.column_variables = None
             self.holder = None
             self.diagram = None
             self.image_graph = None
+            self.image_column = None
             self.count_metric = None
             self.graph = None
+            self.time_metric = None
         def get_main_holder(self,table=None, miner=None, client=None):
             if client != None:
                 self.connect = clickhouse_connect.get_client(host=client['host'], port=client['port'],
@@ -91,15 +97,29 @@ class PythonMain:
             self.miner.apply()
             self.graph = self.miner.graph
             self.graph.add_node_metric('count', self.count_metric)
-            variables_query = query_builder.Builder()
-            variables_query.get_variables(table=self.table, client=self.client)
-            variables_query = variables_query.query
+
+            self.query1 = query_builder.Builder()
+            self.query1.get_variables(table=self.table, client=self.client)
+            self.query1 = self.query1.query
+
             self.column_variables = processing_variants.Connect()
-            self.column_variables.apply(variables_query)
+            self.column_variables.apply(self.query1)
             self.column_variables.combine_variables()
+
+            self.all_variables = self.column_variables.all_variables
+            self.time_metric = metric.Metric().culc_edge_metric(self.all_variables,self.client)
             self.column_variables = self.column_variables.column_variables
+
+            self.query2 = query_builder.Builder()
+            self.query2.get_column(table=self.table, client=self.client)
+            self.query2 = self.query2.query
+            column_query = column_diagram.Calc_diagrams()
+            column_query = column_query.calc_diagram_days(self.query2)
+
+            self.image_column = column_diagram.DiagramPainter()
+            self.image_column.create_diagram_days(column_query, '#e06666',self.table)
             self.image_graph = custom_painter.CustomPainter().create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                                               file_name='main_all', format='svg',holder=self.holder)
+                                                                     file_name='main_all', format='svg')
 
         def get_column_data(self,client=None,table=None):
             if client != None:

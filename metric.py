@@ -1,3 +1,5 @@
+import clickhouse_connect
+
 class Metric:
 
     def __init__(self, combine_variables=None, client=None, data=None, edge_metric=None, new_metric_edge_dict=None ):
@@ -8,9 +10,10 @@ class Metric:
         self.new_metric_edge_dict = None
 
     def culc_edge_metric(self, combine_variables, client):
-
         self.edge_metric = []
         self.client = client
+        self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
+                                                    username=client['username'], password=client['password'])
         self.combine_variables = combine_variables
 
         for i in range(len(self.combine_variables)):
