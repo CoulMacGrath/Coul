@@ -99,7 +99,7 @@ class PythonMain:
             self.column_variables.combine_variables()
             self.column_variables = self.column_variables.column_variables
             self.image_graph = custom_painter.CustomPainter().create(nodes=self.graph.nodes, edges=self.graph.edges,
-                                                               file_name='main_all', format='svg',self.holder)
+                                                               file_name='main_all', format='svg',holder=self.holder)
 
         def get_column_data(self,client=None,table=None):
             if client != None:
