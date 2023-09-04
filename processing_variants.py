@@ -122,8 +122,6 @@ class Connect:
 
 
 
-
-
 if __name__ == '__main__':
     #Поключение к clickhouse
     client = clickhouse_connect.get_client(host='pheerses.space', port=8123, username='practice',

@@ -257,10 +257,6 @@ class PythonMain:
 
 
 
-
-
-
-
 if __name__ == '__main__':
     test = PythonMain.Connect()
     test.first_start()

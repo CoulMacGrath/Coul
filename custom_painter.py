@@ -26,7 +26,6 @@ class CustomPainter():
 
 
 
-
     def create(self, nodes, edges, file_name, format, time_metric):
 
         self.nodes = nodes

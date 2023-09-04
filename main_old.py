@@ -13,7 +13,6 @@ import custom_painter as c_p
 #Различные варинаты майнеров
 from sberpm.miners import HeuMiner, SimpleMiner,CausalMiner,AlphaMiner,AlphaPlusMiner, InductiveMiner, CorrelationMiner
 
-
 def  initializating_pm():
 
 #Получение и обработка БД

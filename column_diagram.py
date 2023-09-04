@@ -49,9 +49,7 @@ class DiagramPainter():
 
     def create_diagram(self, days, cases, color, xlabel,table):
         fig, ax = plt.subplots()
-
         ax.bar(days, cases, color=color, width=0.64, )
-
         ax.set_xlabel(xlabel, color='#999999')
         plt.yticks(color='#3c3939')
         plt.xticks(rotation=315, color='#3c3939')

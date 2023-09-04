@@ -59,3 +59,4 @@ class Metric:
                 self.new_metric_edge_dict[i] = new_sum_e_dict[i]/new_total_count_dict[i]
 
         return self.new_metric_edge_dict
+
