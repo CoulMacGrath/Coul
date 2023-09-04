@@ -71,7 +71,7 @@ class Builder:
             self.table = table
         self.table_agg = self.table + '_agg'
         self.client = clickhouse_connect.get_client(host=client['host'], port=client['port'],
-                                                    username=client['username'], password=client['password'])
+                                                  username=client['username'], password=client['password'])
         if filter_column != None:
             self.filter_column = filter_column
             self.query = self.client.query('select count(case_id), count(case_id)*100/(select count(case_id)'

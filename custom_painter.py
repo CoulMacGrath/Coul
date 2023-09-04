@@ -14,7 +14,6 @@ class CustomPainter():
         self.edges = None
         self.file_name = None
         self.time_metric = None
-        #
         self.new_color = new_color
         #Базовые настройки
         self.format = 'svg'
